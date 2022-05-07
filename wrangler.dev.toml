@@ -1,0 +1,20 @@
+name = "ssr-workers"
+type = "javascript"
+workers_dev = true
+compatibility_date = "2022-01-05"
+
+[build]
+command = "./build.sh --dev"
+
+[build.upload]
+dir    = "worker/build/worker"
+format = "modules"
+main   = "./shim.mjs"
+
+[[build.upload.rules]]
+globs = ["worker/**/*.wasm"]
+type  = "CompiledWasm"
+
+[miniflare]
+cache = false
+kv_persist = true

@@ -1,0 +1,11 @@
+{
+    "name": "poe-tmm",
+    "version": "1.0.0",
+    "scripts": {
+        "start": "miniflare -c wrangler.dev.toml --build-watch-path worker/src",
+        "miniflare": "miniflare"
+    },
+    "dependencies": {
+        "miniflare": "^2.0.0"
+    }
+}

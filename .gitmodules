@@ -1,0 +1,4 @@
+[submodule "tree-3.17"]
+	path = data/tree-3.17
+	url = https://github.com/grindinggear/skilltree-export.git
+	branch = master

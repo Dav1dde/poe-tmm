@@ -1,0 +1,17 @@
+[package]
+name = "worker-app"
+version = "0.1.0"
+authors = ["David Herberth <github@dav1d.de>"]
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+debug = []
+
+[dependencies]
+cfg-if = "0.1.2"
+worker = "0.0.9"
+tmm = { path = "../tmm/" }
+anyhow = "1"

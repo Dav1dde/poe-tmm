@@ -1,0 +1,21 @@
+[package]
+name = "tmm"
+version = "0.1.0"
+authors = ["David Herberth <github@dav1d.de>"]
+edition = "2021"
+build = "build/build.rs"
+
+[features]
+default = ["tree-3_17"]
+tree-3_17 = []
+
+[dependencies]
+askama = "0.11"
+base64 = "0.13"
+anyhow = "1"
+
+[build-dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+poe-api = { git = "https://github.com/Dav1dde/poe-rs/", rev = "55a3d32", default-features = false }
+anyhow = "1"
