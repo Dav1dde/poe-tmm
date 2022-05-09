@@ -3,7 +3,11 @@ const S: &str = "AAAABgMDf1wUCPTxbFnzvOqbimdxwGYmlSL074gN4q0KM2wEs1VLjDa4XdSNGGX
 fn main() -> anyhow::Result<()> {
     let stu = S.parse::<tmm::SkillTreeUrl>()?;
 
-    let tree = tmm::render_svg(tmm::Version::V3_17, tmm::Options { nodes: stu.nodes });
+    let options = tmm::Options {
+        nodes: stu.nodes,
+        ..Default::default()
+    };
+    let tree = tmm::render_svg(tmm::Version::V3_17, options);
     std::fs::write("/tmp/t.svg", tree).unwrap();
 
     Ok(())

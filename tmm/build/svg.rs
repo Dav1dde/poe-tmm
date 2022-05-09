@@ -3,16 +3,35 @@ use std::io::Write;
 use crate::tree::{Path, Sweep, Tree};
 
 const STYLES_TEMPLATE: &str = r#"
+svg {
+    background-color: {{ background_color }};
+}
+
+#nodes {
+    color: {{ node_color }};
+}
+
+#nodes circle {
+    r: 50;
+    fill: currentColor;
+}
+#connections {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 20;
+    color: {{ connection_color }};
+}
+
 {% for node in nodes -%}
 #n{{ node }}{% if !loop.last %}, {% endif -%}
 {%- endfor %} {
-    color: red;
+    color: {{ node_active_color }};
 }
 
 {% for (a, b) in nodes|connections -%}
 #c{{ a }}-{{ b }}{% if !loop.last %}, {% endif -%}
 {%- endfor %} {
-    color: red;
+    color: {{ connection_active_color }};
 }
 "#;
 
@@ -26,31 +45,14 @@ pub fn render(tree: &Tree, output: &mut dyn Write) -> anyhow::Result<()> {
     }
 
     w!(
-        r#"<svg style="background-color: #aaa" nodes="44202 29353" viewBox="{} {} {} {}" xmlns="http://www.w3.org/2000/svg">"#,
+        r#"<svg viewBox="{} {} {} {}" xmlns="http://www.w3.org/2000/svg">"#,
         tree.view_box.x - OFFSET as i32,
         tree.view_box.y - OFFSET as i32,
         tree.view_box.dx + OFFSET * 2,
         tree.view_box.dy + OFFSET * 2,
     );
 
-    w!(r#"<style>"#);
-    w!(
-        r#"
-        #nodes circle {{
-            r: 50;
-            fill: currentColor;
-        }}
-        #connections {{
-            fill: none;
-            stroke: currentColor;
-            stroke-width: 20;
-        }}
-
-        {}
-    "#,
-        STYLES_TEMPLATE
-    );
-    w!(r#"</style>"#);
+    w!(r#"<style>{}</style>"#, STYLES_TEMPLATE);
 
     w!(r#"<g id="connections">"#);
     for connection in &tree.connections {

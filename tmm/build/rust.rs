@@ -25,6 +25,10 @@ pub fn render(tree: &Tree, path: &str, output: &mut dyn Write) -> anyhow::Result
     }
 
     w!(r#"// @generated"#);
+    w!(r#"
+       use super::*;
+       type CowString = std::borrow::Cow<'static, str>;
+    "#);
 
     let connections = tree
         .connections
@@ -39,12 +43,19 @@ pub fn render(tree: &Tree, path: &str, output: &mut dyn Write) -> anyhow::Result
     );
 
     w!(r#"
-       #[derive(::askama::Template)]
+       #[derive(::askama::Template, Debug)]
        #[template(path = "{path}", escape = "html")]
         pub struct Tree {{
             pub nodes: Vec<u16>,
+            pub background_color: CowString,
+            pub node_color: CowString,
+            pub node_active_color: CowString,
+            pub connection_color: CowString,
+            pub connection_active_color: CowString,
         }}
     "#);
+
+    w!("template_impl!(Tree);");
 
     w!("{}", FILTERS);
 

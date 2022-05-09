@@ -12,6 +12,6 @@ debug = []
 
 [dependencies]
 cfg-if = "0.1.2"
-worker = "0.0.9"
+worker = { git = "https://github.com/Dav1dde/workers-rs.git", rev = "5a24cc5d", package = "worker" }
 tmm = { path = "../tmm/" }
 anyhow = "1"

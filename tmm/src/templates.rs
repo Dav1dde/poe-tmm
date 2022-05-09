@@ -1,23 +1,59 @@
+use std::borrow::Cow;
+
 #[cfg(feature = "tree-3_17")]
-mod tree3_17 {
+pub(crate) mod tree3_17 {
     include!(concat!(env!("OUT_DIR"), "/tree3_17.rs"));
 }
 
-pub enum Version {
-    #[cfg(feature = "tree-3_17")]
-    V3_17,
-}
+const DEFAULT_BACKGROUND_COLOR: Cow<'static, str> = Cow::Borrowed("rgba(0, 0, 0, 0)");
+const DEFAULT_COLOR: Cow<'static, str> = Cow::Borrowed("#aaaaaa");
+const DEFAULT_ACTIVE_COLOR: Cow<'static, str> = Cow::Borrowed("#dd00dd");
 
-pub struct Options {
-    pub nodes: Vec<u16>,
-}
+macro_rules! template_impl {
+    ($name:ident) => {
+        impl $name {}
 
-pub fn render_svg(version: Version, options: Options) -> String {
-    match version {
-        #[cfg(feature = "tree-3_17")]
-        Version::V3_17 => tree3_17::Tree {
-            nodes: options.nodes,
+        impl From<crate::Options> for $name {
+            fn from(options: crate::Options) -> $name {
+                let background_color = options
+                    .background_color
+                    .map(std::borrow::Cow::Owned)
+                    .unwrap_or(DEFAULT_BACKGROUND_COLOR);
+
+                let node_color = options
+                    .node_color
+                    .or_else(|| options.color.clone())
+                    .map(std::borrow::Cow::Owned)
+                    .unwrap_or(DEFAULT_COLOR);
+
+                let node_active_color = options
+                    .node_active_color
+                    .or_else(|| options.active_color.clone())
+                    .map(std::borrow::Cow::Owned)
+                    .unwrap_or(DEFAULT_ACTIVE_COLOR);
+
+                let connection_color = options
+                    .connection_color
+                    .or(options.color)
+                    .map(std::borrow::Cow::Owned)
+                    .unwrap_or(DEFAULT_COLOR);
+
+                let connection_active_color = options
+                    .connection_active_color
+                    .or(options.active_color)
+                    .map(std::borrow::Cow::Owned)
+                    .unwrap_or(DEFAULT_ACTIVE_COLOR);
+
+                $name {
+                    nodes: options.nodes,
+                    background_color,
+                    node_color,
+                    node_active_color,
+                    connection_color,
+                    connection_active_color,
+                }
+            }
         }
-        .to_string(),
-    }
+    };
 }
+use template_impl;
