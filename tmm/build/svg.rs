@@ -12,24 +12,15 @@ svg {
 }
 
 .nodes circle {
-    r: 50;
-    fill: currentColor;
 }
 .nodes circle.keystone {
-    r: 80;
 }
 .nodes circle.mastery {
     color: transparent;
-    fill: none;
-    r: 35;
-    stroke-width: 35;
-    stroke: currentColor;
+    stroke-width: 40;
 }
 
 .connections {
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 20;
     color: {{ connection_color }};
 }
 
@@ -43,6 +34,7 @@ svg {
 #c{{ a }}-{{ b }}{% if !loop.last %}, {% endif -%}
 {%- endfor %} {
     color: {{ connection_active_color }};
+    stroke-width: 35;
 }
 "#;
 
@@ -65,7 +57,7 @@ pub fn render(tree: &Tree, output: &mut dyn Write) -> anyhow::Result<()> {
 
     w!(r#"<style>{}</style>"#, STYLES_TEMPLATE);
 
-    w!(r#"<g class="connections">"#);
+    w!(r#"<g class="connections" fill="none" stroke-width="20" stroke="currentColor">"#);
     for connection in &tree.connections {
         let x1 = connection.a.position.x;
         let y1 = connection.a.position.y;
@@ -90,15 +82,15 @@ pub fn render(tree: &Tree, output: &mut dyn Write) -> anyhow::Result<()> {
     }
     w!("</g>");
 
-    w!(r#"<g class="nodes">"#);
+    w!(r#"<g class="nodes" stroke="currentColor" fill="currentColor">"#);
     for node in &tree.nodes {
-        let class = match node.kind {
-            NodeKind::Mastery => r#"class="mastery""#,
-            NodeKind::Keystone => r#"class="keystone""#,
-            _ => "",
+        let attrs = match node.kind {
+            NodeKind::Mastery => r#"r="35" class="mastery""#,
+            NodeKind::Keystone => r#"r="80" class="keystone""#,
+            _ => r#"r="50""#,
         };
         w!(
-            r#"<circle cx="{}" cy="{}" id="n{}" {class} />"#,
+            r#"<circle cx="{}" cy="{}" id="n{}" {attrs} />"#,
             node.position.x,
             node.position.y,
             node.id
