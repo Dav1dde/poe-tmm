@@ -13,11 +13,25 @@ pub struct Coord {
 pub struct Node {
     pub id: u16,
     pub position: Coord,
+    pub kind: NodeKind,
+}
+
+#[derive(Copy, Clone)]
+pub enum NodeKind {
+    Normal,
+    Mastery,
+    Keystone,
+}
+
+#[derive(Copy, Clone)]
+pub struct NodeRef {
+    pub id: u16,
+    pub position: Coord,
 }
 
 pub struct Connection {
-    pub a: Node,
-    pub b: Node,
+    pub a: NodeRef,
+    pub b: NodeRef,
     pub path: Path,
 }
 
@@ -53,8 +67,8 @@ pub fn build(tree: &data::Tree) -> Tree {
     let mut nodes = Vec::new();
     let mut connections = Vec::new();
 
-    for group in tree.groups() {
-        for node in group.nodes() {
+    for group in tree.groups().filter(filter_group) {
+        for node in group.nodes().filter(filter_node) {
             let (angle, x, y) = node.position();
 
             min_x = min_x.min(x);
@@ -62,12 +76,23 @@ pub fn build(tree: &data::Tree) -> Tree {
             max_x = max_x.max(x);
             max_y = max_y.max(y);
 
+            let mut kind = NodeKind::Normal;
+            if node.is_keystone {
+                kind = NodeKind::Keystone;
+            } else if node.is_mastery {
+                kind = NodeKind::Mastery;
+            }
+
             nodes.push(Node {
                 id: node.id(),
                 position: Coord { x, y },
+                kind,
             });
 
-            for out_node in node.out() {
+            for out_node in node
+                .out()
+                .filter(|out_node| filter_connection(&node, out_node))
+            {
                 let (out_angle, out_x, out_y) = out_node.position();
 
                 let path = if node.group == out_node.group && node.orbit == out_node.orbit {
@@ -86,11 +111,11 @@ pub fn build(tree: &data::Tree) -> Tree {
                 };
 
                 connections.push(Connection {
-                    a: Node {
+                    a: NodeRef {
                         id: node.id(),
                         position: Coord { x, y },
                     },
-                    b: Node {
+                    b: NodeRef {
                         id: out_node.id(),
                         position: Coord { x: out_x, y: out_y },
                     },
@@ -113,4 +138,15 @@ pub fn build(tree: &data::Tree) -> Tree {
         nodes,
         connections,
     }
+}
+
+fn filter_group(group: &data::Group) -> bool {
+    !group.is_proxy
+}
+
+fn filter_node(node: &data::Node) -> bool {
+    node.ascendancy_name.is_none() && node.class_start_index.is_none()
+}
+fn filter_connection(a: &data::Node, b: &data::Node) -> bool {
+    filter_node(b) && !a.is_mastery && !b.is_mastery
 }

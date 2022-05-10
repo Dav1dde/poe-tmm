@@ -1,21 +1,32 @@
 use std::io::Write;
 
-use crate::tree::{Path, Sweep, Tree};
+use crate::tree::{NodeKind, Path, Sweep, Tree};
 
 const STYLES_TEMPLATE: &str = r#"
 svg {
     background-color: {{ background_color }};
 }
 
-#nodes {
+.nodes {
     color: {{ node_color }};
 }
 
-#nodes circle {
+.nodes circle {
     r: 50;
     fill: currentColor;
 }
-#connections {
+.nodes circle.keystone {
+    r: 80;
+}
+.nodes circle.mastery {
+    color: transparent;
+    fill: none;
+    r: 35;
+    stroke-width: 35;
+    stroke: currentColor;
+}
+
+.connections {
     fill: none;
     stroke: currentColor;
     stroke-width: 20;
@@ -54,7 +65,7 @@ pub fn render(tree: &Tree, output: &mut dyn Write) -> anyhow::Result<()> {
 
     w!(r#"<style>{}</style>"#, STYLES_TEMPLATE);
 
-    w!(r#"<g id="connections">"#);
+    w!(r#"<g class="connections">"#);
     for connection in &tree.connections {
         let x1 = connection.a.position.x;
         let y1 = connection.a.position.y;
@@ -79,10 +90,15 @@ pub fn render(tree: &Tree, output: &mut dyn Write) -> anyhow::Result<()> {
     }
     w!("</g>");
 
-    w!(r#"<g id="nodes">"#);
+    w!(r#"<g class="nodes">"#);
     for node in &tree.nodes {
+        let class = match node.kind {
+            NodeKind::Mastery => r#"class="mastery""#,
+            NodeKind::Keystone => r#"class="keystone""#,
+            _ => "",
+        };
         w!(
-            r#"<circle cx="{}" cy="{}" id="n{}" />"#,
+            r#"<circle cx="{}" cy="{}" id="n{}" {class} />"#,
             node.position.x,
             node.position.y,
             node.id

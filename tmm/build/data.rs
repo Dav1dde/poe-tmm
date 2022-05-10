@@ -26,14 +26,10 @@ impl Tree {
     }
 
     pub fn groups(&self) -> impl Iterator<Item = Group<'_>> {
-        self.data
-            .groups
-            .values()
-            .filter(|group| self.filter_group(group))
-            .map(|group| Group {
-                inner: group,
-                parent: self,
-            })
+        self.data.groups.values().map(|group| Group {
+            inner: group,
+            parent: self,
+        })
     }
 
     fn get_position(&self, node: &SkillTreeNode, group: &SkillTreeGroup) -> (f32, i32, i32) {
@@ -51,14 +47,6 @@ impl Tree {
         let y = group.y - radius * angle.cos();
 
         (angle % TWO_PI, x as i32, y as i32)
-    }
-
-    fn filter_group(&self, group: &SkillTreeGroup) -> bool {
-        !group.is_proxy
-    }
-
-    fn filter_node(&self, node: &SkillTreeNode) -> bool {
-        !node.is_mastery && node.ascendancy_name.is_none() && node.class_start_index.is_none()
     }
 }
 
@@ -82,13 +70,20 @@ impl<'a> Group<'a> {
                         .expect("group contains unknown node"),
                 )
             })
-            .filter(|(_, node)| self.parent.filter_node(node))
             .map(|(id, node)| Node {
                 id: id.parse().unwrap(),
                 inner: node,
                 groupx: Cell::new(Some(self.inner)),
                 parent: self.parent,
             })
+    }
+}
+
+impl<'a> Deref for Group<'a> {
+    type Target = SkillTreeGroup;
+
+    fn deref(&self) -> &Self::Target {
+        self.inner
     }
 }
 
@@ -113,7 +108,6 @@ impl<'a> Node<'a> {
             .out
             .iter()
             .map(|id| (id, self.parent.data.nodes.get(id).unwrap()))
-            .filter(|(_, node)| self.parent.filter_node(node))
             .map(|(id, node)| Node {
                 id: id.parse().unwrap(),
                 inner: node,
