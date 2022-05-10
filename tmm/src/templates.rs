@@ -15,7 +15,8 @@ pub(crate) mod tree3_17 {
 
 const DEFAULT_BACKGROUND_COLOR: Cow<'static, str> = Cow::Borrowed("rgba(0, 0, 0, 0)");
 const DEFAULT_COLOR: Cow<'static, str> = Cow::Borrowed("#64748b");
-const DEFAULT_ACTIVE_COLOR: Cow<'static, str> = Cow::Borrowed("#38bdf8");
+const DEFAULT_ACTIVE_COLOR: Cow<'static, str> = Cow::Borrowed("#0ea5e9");
+const DEFAULT_ACTIVE_NODE_COLOR: Cow<'static, str> = Cow::Borrowed("#38bdf8");
 
 macro_rules! template_impl {
     ($name:ident) => {
@@ -38,7 +39,7 @@ macro_rules! template_impl {
                     .node_active_color
                     .or_else(|| options.active_color.clone())
                     .map(std::borrow::Cow::Owned)
-                    .unwrap_or(DEFAULT_ACTIVE_COLOR);
+                    .unwrap_or(DEFAULT_ACTIVE_NODE_COLOR);
 
                 let connection_color = options
                     .connection_color
