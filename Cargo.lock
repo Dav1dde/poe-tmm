@@ -571,6 +571,7 @@ dependencies = [
  "anyhow",
  "askama",
  "base64",
+ "cfg-if 1.0.0",
  "poe-api",
  "serde",
  "serde_json",

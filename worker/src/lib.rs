@@ -41,7 +41,10 @@ pub async fn main(req: Request, _env: Env, ctx: Context) -> Result<Response> {
 
     let path = req.path();
     let (version, stu) = match path.trim_start_matches('/').split_once('/') {
-        Some(("3.17", stu)) => (tmm::Version::V3_17, stu),
+        Some((version, stu)) => (
+            version.parse().unwrap_or_else(|_| tmm::Version::latest()),
+            stu,
+        ),
         _ => return Response::error("Not Found", 404),
     };
 

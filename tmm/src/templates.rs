@@ -1,13 +1,21 @@
 use std::borrow::Cow;
 
+#[cfg(feature = "tree-3_15")]
+pub(crate) mod tree3_15 {
+    include!(concat!(env!("OUT_DIR"), "/tree3_15.rs"));
+}
+#[cfg(feature = "tree-3_16")]
+pub(crate) mod tree3_16 {
+    include!(concat!(env!("OUT_DIR"), "/tree3_16.rs"));
+}
 #[cfg(feature = "tree-3_17")]
 pub(crate) mod tree3_17 {
     include!(concat!(env!("OUT_DIR"), "/tree3_17.rs"));
 }
 
 const DEFAULT_BACKGROUND_COLOR: Cow<'static, str> = Cow::Borrowed("rgba(0, 0, 0, 0)");
-const DEFAULT_COLOR: Cow<'static, str> = Cow::Borrowed("#aaaaaa");
-const DEFAULT_ACTIVE_COLOR: Cow<'static, str> = Cow::Borrowed("#dd00dd");
+const DEFAULT_COLOR: Cow<'static, str> = Cow::Borrowed("#64748b");
+const DEFAULT_ACTIVE_COLOR: Cow<'static, str> = Cow::Borrowed("#38bdf8");
 
 macro_rules! template_impl {
     ($name:ident) => {

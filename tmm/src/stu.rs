@@ -1,3 +1,4 @@
+use crate::error::SkillTreeUrlError;
 use std::str::FromStr;
 
 // This should be an enum with different versions
@@ -9,13 +10,14 @@ pub struct SkillTreeUrl {
 
 impl FromStr for SkillTreeUrl {
     // TODO this shouldnt be anyhow
-    type Err = anyhow::Error;
+    type Err = SkillTreeUrlError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // TODO: maybe parse an actual poe url here?
-        let data = base64::decode_config(s, base64::URL_SAFE)?;
+        let data =
+            base64::decode_config(s, base64::URL_SAFE).map_err(|_| SkillTreeUrlError::Decode)?;
         if data.len() < 6 {
-            anyhow::bail!("invalid skill tree url");
+            return Err(SkillTreeUrlError::Eof);
         }
 
         let version = (data[0] as u32) << 24
@@ -44,16 +46,14 @@ impl FromStr for SkillTreeUrl {
                     nodes,
                 })
             }
-            _ => {
-                anyhow::bail!("invalid version")
-            }
+            _ => Err(SkillTreeUrlError::UnknownVersion(version)),
         }
     }
 }
 
-fn read_u16s(data: &[u8], start: usize, amount: usize) -> anyhow::Result<Vec<u16>> {
+fn read_u16s(data: &[u8], start: usize, amount: usize) -> Result<Vec<u16>, SkillTreeUrlError> {
     if data.len() < start + amount * 2 {
-        anyhow::bail!("not enough data to read {} nodes", amount);
+        return Err(SkillTreeUrlError::Eof);
     }
 
     let mut result = Vec::with_capacity(amount);
