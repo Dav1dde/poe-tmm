@@ -2,6 +2,8 @@ use std::io::Write;
 
 use crate::tree::{NodeKind, Path, Sweep, Tree};
 
+const SCRIPT: &str = include_str!("svg.js");
+
 const STYLES_TEMPLATE: &str = r#"
 svg {
     background-color: {{ background_color }};
@@ -98,6 +100,7 @@ pub fn render(tree: &Tree, output: &mut dyn Write) -> anyhow::Result<()> {
     }
     w!("</g>");
 
+    w!(r#"<script>{}</script>"#, SCRIPT);
     w!("</svg>");
 
     Ok(())

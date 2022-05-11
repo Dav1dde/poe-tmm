@@ -13,7 +13,7 @@ pub(crate) mod tree3_17 {
     include!(concat!(env!("OUT_DIR"), "/tree3_17.rs"));
 }
 
-const DEFAULT_BACKGROUND_COLOR: Cow<'static, str> = Cow::Borrowed("rgba(0, 0, 0, 0)");
+const DEFAULT_BACKGROUND_COLOR: Cow<'static, str> = Cow::Borrowed("#1e293b");
 const DEFAULT_COLOR: Cow<'static, str> = Cow::Borrowed("#64748b");
 const DEFAULT_ACTIVE_COLOR: Cow<'static, str> = Cow::Borrowed("#0ea5e9");
 const DEFAULT_ACTIVE_NODE_COLOR: Cow<'static, str> = Cow::Borrowed("#38bdf8");
