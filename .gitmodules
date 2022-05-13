@@ -10,3 +10,7 @@
 	path = data/tree-3.15
 	url = https://github.com/grindinggear/skilltree-export.git
 	branch = master
+[submodule "tree-3.18"]
+	path = data/tree-3.18
+	url = https://github.com/grindinggear/skilltree-export.git
+	branch = master
