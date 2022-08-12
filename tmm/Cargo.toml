@@ -6,11 +6,12 @@ edition = "2021"
 build = "build/build.rs"
 
 [features]
-default = ["tree-3_15", "tree-3_16", "tree-3_17", "tree-3_18"]
+default = ["tree-3_15", "tree-3_16", "tree-3_17", "tree-3_18", "tree-3_19"]
 tree-3_15 = []
 tree-3_16 = []
 tree-3_17 = []
 tree-3_18 = []
+tree-3_19 = []
 
 [dependencies]
 askama = "0.11"
@@ -20,5 +21,5 @@ cfg-if = "1"
 [build-dependencies]
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-poe-api = { git = "https://github.com/Dav1dde/poe-rs/", rev = "55a3d32", default-features = false }
+poe-api = { git = "https://github.com/Dav1dde/poe-rs/", rev = "ab3a60a", default-features = false }
 anyhow = "1"

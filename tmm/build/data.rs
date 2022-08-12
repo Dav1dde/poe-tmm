@@ -40,7 +40,7 @@ impl Tree {
         let angle = match skills_on_orbit {
             16 => (ANGLES_16[orbit_index as usize] as f32).to_radians(),
             40 => (ANGLES_40[orbit_index as usize] as f32).to_radians(),
-            soo => (TWO_PI / soo as f32 * orbit_index as f32),
+            soo => TWO_PI / soo as f32 * orbit_index as f32,
         };
 
         let x = group.x + radius * angle.sin();
