@@ -46,6 +46,7 @@ pub fn render(tree: &Tree, path: &str, output: &mut dyn Write) -> anyhow::Result
        #[derive(::askama::Template, Debug)]
        #[template(path = "{path}", escape = "html")]
         pub struct Tree {{
+            pub ascendancy: CowString,
             pub nodes: Vec<u16>,
             pub background_color: CowString,
             pub node_color: CowString,

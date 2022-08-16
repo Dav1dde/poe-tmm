@@ -32,7 +32,11 @@ impl Tree {
         })
     }
 
-    fn get_position(&self, node: &SkillTreeNode, group: &SkillTreeGroup) -> (f32, i32, i32) {
+    fn get_position(
+        &self,
+        node: &SkillTreeNode,
+        (group_x, group_y): (f32, f32),
+    ) -> (f32, i32, i32) {
         let radius = self.data.constants.orbit_radii[node.orbit.unwrap() as usize] as f32;
         let skills_on_orbit = self.data.constants.skills_per_orbit[node.orbit.unwrap() as usize];
         let orbit_index = node.orbit_index.unwrap_or(0);
@@ -43,8 +47,8 @@ impl Tree {
             soo => TWO_PI / soo as f32 * orbit_index as f32,
         };
 
-        let x = group.x + radius * angle.sin();
-        let y = group.y - radius * angle.cos();
+        let x = group_x + radius * angle.sin();
+        let y = group_y - radius * angle.cos();
 
         (angle % TWO_PI, x as i32, y as i32)
     }
@@ -100,7 +104,12 @@ impl<'a> Node<'a> {
     }
 
     pub fn position(&self) -> (f32, i32, i32) {
-        self.parent.get_position(self.inner, self.group())
+        let group = self.group();
+        self.parent.get_position(self.inner, (group.x, group.y))
+    }
+
+    pub fn position_at(&self, (x, y): (f32, f32)) -> (f32, i32, i32) {
+        self.parent.get_position(self.inner, (x, y))
     }
 
     pub fn out(&self) -> impl Iterator<Item = Node<'_>> {

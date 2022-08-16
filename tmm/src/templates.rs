@@ -62,6 +62,9 @@ macro_rules! template_impl {
                     .unwrap_or(DEFAULT_ACTIVE_COLOR);
 
                 $name {
+                    ascendancy: to_ascendancy_name(options.class, options.ascendancy)
+                        .unwrap_or("unknown")
+                        .into(),
                     nodes: options.nodes,
                     background_color,
                     node_color,
@@ -74,3 +77,30 @@ macro_rules! template_impl {
     };
 }
 use template_impl;
+
+fn to_ascendancy_name(class: u8, ascendancy: u8) -> Option<&'static str> {
+    let asc = match (class, ascendancy) {
+        (0, 1) => "Ascendant",
+        (1, 1) => "Juggernaut",
+        (1, 2) => "Berserker",
+        (1, 3) => "Chieftain",
+        (2, 1) => "Raider",
+        (2, 2) => "Deadeye",
+        (2, 3) => "Pathfinder",
+        (3, 1) => "Occultist",
+        (3, 2) => "Elementalist",
+        (3, 3) => "Necromancer",
+        (4, 1) => "Slayer",
+        (4, 2) => "Gladiator",
+        (4, 3) => "Champion",
+        (5, 1) => "Inquisitor",
+        (5, 2) => "Hierophant",
+        (5, 3) => "Guardian",
+        (6, 1) => "Assassin",
+        (6, 2) => "Trickster",
+        (7, 3) => "Saboteur",
+        _ => return None,
+    };
+
+    Some(asc)
+}

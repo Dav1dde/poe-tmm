@@ -4,9 +4,11 @@ mod utils;
 
 use utils::ResponseExt;
 
-fn parse_options(url: Url, nodes: Vec<u16>) -> tmm::Options {
+fn parse_options(url: Url, stu: tmm::SkillTreeUrl) -> tmm::Options {
     let mut options = tmm::Options {
-        nodes,
+        class: stu.class,
+        ascendancy: stu.ascendancy,
+        nodes: stu.nodes,
         ..Default::default()
     };
 
@@ -53,7 +55,7 @@ pub async fn main(req: Request, _env: Env, ctx: Context) -> Result<Response> {
         Err(_) => return Response::error("Invalid STU", 400),
     };
 
-    let body = tmm::render_svg(version, parse_options(req.url()?, stu.nodes));
+    let body = tmm::render_svg(version, parse_options(req.url()?, stu));
 
     let (response, response_for_cache) = Response::ok(body)?
         .with_content_type("image/svg+xml")?
