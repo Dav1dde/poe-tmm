@@ -61,6 +61,8 @@ impl std::str::FromStr for Version {
 
 #[derive(Default)]
 pub struct Options {
+    pub class: u8,
+    pub ascendancy: u8,
     pub nodes: Nodes,
     pub background_color: Option<String>,
     pub color: Option<String>,

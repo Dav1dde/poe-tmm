@@ -61,8 +61,18 @@ macro_rules! template_impl {
                     .map(std::borrow::Cow::Owned)
                     .unwrap_or(DEFAULT_ACTIVE_COLOR);
 
+                let mut nodes = options.nodes;
+                if let Some(start_node) =
+                    Self::ascendancy_start_node(options.class, options.ascendancy)
+                {
+                    nodes.push(start_node);
+                }
+
                 $name {
-                    nodes: options.nodes,
+                    ascendancy: Self::ascendancy_name(options.class, options.ascendancy)
+                        .unwrap_or("unknown")
+                        .into(),
+                    nodes,
                     background_color,
                     node_color,
                     node_active_color,

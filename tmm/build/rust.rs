@@ -46,6 +46,7 @@ pub fn render(tree: &Tree, path: &str, output: &mut dyn Write) -> anyhow::Result
        #[derive(::askama::Template, Debug)]
        #[template(path = "{path}", escape = "html")]
         pub struct Tree {{
+            pub ascendancy: CowString,
             pub nodes: Vec<u16>,
             pub background_color: CowString,
             pub node_color: CowString,
@@ -58,6 +59,43 @@ pub fn render(tree: &Tree, path: &str, output: &mut dyn Write) -> anyhow::Result
     w!("template_impl!(Tree);");
 
     w!("{}", FILTERS);
+
+    w!(r#"
+        impl Tree {{
+            pub(crate) fn ascendancy_start_node(class: u8, ascendancy: u8) -> Option<u16> {{
+                match (class, ascendancy) {{
+    "#);
+    for info in tree.ascendancies.values() {
+        w!(
+            "({}, {}) => Some({}),",
+            info.class,
+            info.ascendancy,
+            info.start_node
+        );
+    }
+    w!(r#"
+                    _ => None,
+                }}
+            }}
+
+            pub(crate) fn ascendancy_name(class: u8, ascendancy: u8) -> Option<&'static str> {{
+                match (class, ascendancy) {{
+    "#);
+    for (name, info) in tree.ascendancies.iter() {
+        w!(
+            "({}, {}) => Some(\"{}\"),",
+            info.class,
+            info.ascendancy,
+            name.as_ref()
+        );
+    }
+    w!(r#"
+                    _ => None,
+                }}
+            }}
+
+        }}
+    "#);
 
     Ok(())
 }
