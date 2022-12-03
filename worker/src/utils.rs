@@ -2,7 +2,7 @@ use worker::{worker_sys, Response, Result};
 
 pub trait ResponseExt: Sized {
     fn cache_for(self, ttl: u32) -> Result<Self> {
-        self.with_header("Cache-Control", &format!("max-age={}", ttl))
+        self.with_header("Cache-Control", &format!("max-age={ttl}"))
     }
     fn with_content_type(self, content_type: &str) -> Result<Self> {
         self.with_header("Content-Type", content_type)

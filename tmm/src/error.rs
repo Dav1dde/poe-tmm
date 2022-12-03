@@ -23,7 +23,7 @@ impl fmt::Display for SkillTreeUrlError {
         match self {
             Self::Decode => write!(f, "unable to decode skill tree url"),
             Self::UnknownVersion(version) => {
-                write!(f, "version {} unknown in skill tree url", version)
+                write!(f, "version {version} unknown in skill tree url")
             }
             Self::Eof => write!(f, "unexpected eof while parsing skill tree url"),
         }

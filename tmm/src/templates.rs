@@ -20,6 +20,10 @@ pub(crate) mod tree3_18 {
 pub(crate) mod tree3_19 {
     include!(concat!(env!("OUT_DIR"), "/tree3_19.rs"));
 }
+#[cfg(feature = "tree-3_20")]
+pub(crate) mod tree3_20 {
+    include!(concat!(env!("OUT_DIR"), "/tree3_20.rs"));
+}
 
 const DEFAULT_BACKGROUND_COLOR: Cow<'static, str> = Cow::Borrowed("rgba(0, 0, 0, 0)");
 const DEFAULT_COLOR: Cow<'static, str> = Cow::Borrowed("#64748b");
