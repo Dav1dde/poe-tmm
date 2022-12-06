@@ -106,6 +106,13 @@ pub fn build(tree: &data::Tree) -> Tree {
     let mut max_x = i32::MIN;
     let mut max_y = i32::MIN;
 
+    let mut update_min_max = |x, y| {
+        min_x = min_x.min(x);
+        min_y = min_y.min(y);
+        max_x = max_x.max(x);
+        max_y = max_y.max(y);
+    };
+
     let mut nodes = Vec::new();
     let mut connections = Vec::new();
     let mut ascendancies = HashMap::new();
@@ -122,11 +129,6 @@ pub fn build(tree: &data::Tree) -> Tree {
     for group in tree.groups().filter(filter_group) {
         for node in group.nodes().filter(filter_node) {
             let (angle, x, y) = node.position();
-
-            min_x = min_x.min(x);
-            min_y = min_y.min(y);
-            max_x = max_x.max(x);
-            max_y = max_y.max(y);
 
             let tree_node = Node {
                 id: node.id(),
@@ -145,6 +147,9 @@ pub fn build(tree: &data::Tree) -> Tree {
                     }
                     (&mut asc.nodes, &mut asc.connections)
                 } else {
+                    // Only update on normal tree nodes, ascendancies will be moved
+                    update_min_max(x, y);
+
                     (&mut nodes, &mut connections)
                 };
             nodes.push(tree_node);
@@ -192,21 +197,22 @@ pub fn build(tree: &data::Tree) -> Tree {
         let diff_x = ASCENDANCY_POS_X - asc.start_position.x;
         let diff_y = ASCENDANCY_POS_Y - asc.start_position.y;
 
-        let update_node = |mut node: Node| {
+        let update_node = |node: &mut Node| {
             node.position = Coord {
                 x: diff_x + node.position.x,
                 y: diff_y + node.position.y,
             };
-            node
         };
 
-        for node in asc.nodes {
-            nodes.push(update_node(node));
+        for mut node in asc.nodes {
+            update_node(&mut node);
+            update_min_max(node.position.x, node.position.y);
+            nodes.push(node);
         }
 
         for mut connection in asc.connections {
-            connection.a = update_node(connection.a);
-            connection.b = update_node(connection.b);
+            update_node(&mut connection.a);
+            update_node(&mut connection.b);
             connections.push(connection);
         }
 
@@ -234,6 +240,12 @@ pub fn build(tree: &data::Tree) -> Tree {
             },
         );
     }
+
+    // Small border to make positioning the image easier
+    min_x -= 75;
+    min_y -= 75;
+    max_x += 75;
+    max_y += 75;
 
     let dx = (max_x - min_x) as u32;
     let dy = (max_y - min_y) as u32;
