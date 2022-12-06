@@ -15,9 +15,10 @@ svg {
 .nodes circle {
 }
 .nodes circle.keystone {
+    color: {{ keystone_color }};
 }
 .nodes circle.mastery {
-    color: transparent;
+    color: {{ mastery_color }};
     stroke-width: 40;
 }
 
@@ -37,6 +38,18 @@ svg {
 #n{{ node }}{% if !loop.last %}, {% endif -%}
 {%- endfor %} {
     color: {{ node_active_color }};
+}
+
+{% for node in nodes|keystones -%}
+#n{{ node }}{% if !loop.last %}, {% endif -%}
+{%- endfor %} {
+    color: {{ keystone_active_color }};
+}
+
+{% for node in nodes|masteries -%}
+#n{{ node }}{% if !loop.last %}, {% endif -%}
+{%- endfor %} {
+    color: {{ mastery_active_color }};
 }
 
 {% for (a, b) in nodes|connections -%}

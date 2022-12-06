@@ -13,12 +13,20 @@ fn parse_options(url: Url, stu: tmm::SkillTreeUrl) -> tmm::Options {
     };
 
     for (k, v) in url.query_pairs() {
+        if !v.chars().all(is_ascii_alphabetic_or_digit_or_hash) {
+            continue;
+        }
+
         match k.as_ref() {
             "backgroundColor" => options.background_color = Some(v.into_owned()),
             "color" => options.color = Some(v.into_owned()),
             "activeColor" => options.active_color = Some(v.into_owned()),
             "nodeColor" => options.node_color = Some(v.into_owned()),
             "nodeActiveColor" => options.node_active_color = Some(v.into_owned()),
+            "keystoneColor" => options.keystone_color = Some(v.into_owned()),
+            "keystoneActiveColor" => options.keystone_active_color = Some(v.into_owned()),
+            "masteryColor" => options.mastery_color = Some(v.into_owned()),
+            "masteryActiveColor" => options.mastery_active_color = Some(v.into_owned()),
             "connectionColor" => options.connection_color = Some(v.into_owned()),
             "connectionActiveColor" => options.connection_active_color = Some(v.into_owned()),
             _ => {}
@@ -26,6 +34,10 @@ fn parse_options(url: Url, stu: tmm::SkillTreeUrl) -> tmm::Options {
     }
 
     options
+}
+
+fn is_ascii_alphabetic_or_digit_or_hash(c: char) -> bool {
+    c.is_ascii_alphabetic() || c.is_ascii_digit() || c == '#'
 }
 
 #[event(fetch)]

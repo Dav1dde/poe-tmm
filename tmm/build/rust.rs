@@ -14,6 +14,14 @@ mod filters {
         }
         Ok(result)
     }
+
+    pub fn keystones(nodes: &[u16]) -> ::askama::Result<impl Iterator<Item = u16> + '_> {
+        Ok(nodes.iter().filter(|node| KEYSTONES.contains(node)).copied())
+    }
+
+    pub fn masteries(nodes: &[u16]) -> ::askama::Result<impl Iterator<Item = u16> + '_> {
+        Ok(nodes.iter().filter(|node| MASTERIES.contains(node)).copied())
+    }
 }
 "#;
 
@@ -42,6 +50,27 @@ pub fn render(tree: &Tree, path: &str, output: &mut dyn Write) -> anyhow::Result
         connections
     );
 
+    let mut keystones = phf_codegen::Set::new();
+    let mut masteries = phf_codegen::Set::new();
+    for node in &tree.nodes {
+        use crate::tree::NodeKind::*;
+        let set = match node.kind {
+            Keystone => &mut keystones,
+            Mastery => &mut masteries,
+            _ => continue,
+        };
+        set.entry(node.id);
+    }
+
+    w!(
+        "pub static KEYSTONES: phf::Set<u16> = {};",
+        keystones.build()
+    );
+    w!(
+        "pub static MASTERIES: phf::Set<u16> = {};",
+        masteries.build()
+    );
+
     w!(r#"
        #[derive(::askama::Template, Debug)]
        #[template(path = "{path}", escape = "html")]
@@ -51,6 +80,10 @@ pub fn render(tree: &Tree, path: &str, output: &mut dyn Write) -> anyhow::Result
             pub background_color: CowString,
             pub node_color: CowString,
             pub node_active_color: CowString,
+            pub keystone_color: CowString,
+            pub keystone_active_color: CowString,
+            pub mastery_color: CowString,
+            pub mastery_active_color: CowString,
             pub connection_color: CowString,
             pub connection_active_color: CowString,
         }}

@@ -28,7 +28,10 @@ pub(crate) mod tree3_20 {
 const DEFAULT_BACKGROUND_COLOR: Cow<'static, str> = Cow::Borrowed("rgba(0, 0, 0, 0)");
 const DEFAULT_COLOR: Cow<'static, str> = Cow::Borrowed("#64748b");
 const DEFAULT_ACTIVE_COLOR: Cow<'static, str> = Cow::Borrowed("#0ea5e9");
-const DEFAULT_ACTIVE_NODE_COLOR: Cow<'static, str> = Cow::Borrowed("#38bdf8");
+const DEFAULT_NODE_ACTIVE_COLOR: Cow<'static, str> = Cow::Borrowed("#38bdf8");
+const DEFAULT_MASTERY_COLOR: Cow<'static, str> = Cow::Borrowed("transparent");
+const DEFAULT_MASTERY_ACTIVE_COLOR: Cow<'static, str> = Cow::Borrowed("#38bdf8");
+const DEFAULT_KEYSTONE_ACTIVE_COLOR: Cow<'static, str> = Cow::Borrowed("#38bdf8");
 
 macro_rules! template_impl {
     ($name:ident) => {
@@ -49,9 +52,32 @@ macro_rules! template_impl {
 
                 let node_active_color = options
                     .node_active_color
+                    .clone()
                     .or_else(|| options.active_color.clone())
                     .map(std::borrow::Cow::Owned)
-                    .unwrap_or(DEFAULT_ACTIVE_NODE_COLOR);
+                    .unwrap_or(DEFAULT_NODE_ACTIVE_COLOR);
+
+                let keystone_color = options
+                    .keystone_color
+                    .map(std::borrow::Cow::Owned)
+                    .unwrap_or_else(|| node_color.clone());
+
+                let keystone_active_color = options
+                    .keystone_active_color
+                    .or_else(|| options.node_active_color.clone())
+                    .map(std::borrow::Cow::Owned)
+                    .unwrap_or(DEFAULT_KEYSTONE_ACTIVE_COLOR);
+
+                let mastery_color = options
+                    .mastery_color
+                    .map(std::borrow::Cow::Owned)
+                    .unwrap_or(DEFAULT_MASTERY_COLOR);
+
+                let mastery_active_color = options
+                    .mastery_active_color
+                    .or_else(|| options.node_active_color.clone())
+                    .map(std::borrow::Cow::Owned)
+                    .unwrap_or(DEFAULT_MASTERY_ACTIVE_COLOR);
 
                 let connection_color = options
                     .connection_color
@@ -80,6 +106,10 @@ macro_rules! template_impl {
                     background_color,
                     node_color,
                     node_active_color,
+                    keystone_color,
+                    keystone_active_color,
+                    mastery_color,
+                    mastery_active_color,
                     connection_color,
                     connection_active_color,
                 }

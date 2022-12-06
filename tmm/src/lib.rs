@@ -75,6 +75,10 @@ pub struct Options {
     pub active_color: Option<String>,
     pub node_color: Option<String>,
     pub node_active_color: Option<String>,
+    pub keystone_color: Option<String>,
+    pub keystone_active_color: Option<String>,
+    pub mastery_color: Option<String>,
+    pub mastery_active_color: Option<String>,
     pub connection_color: Option<String>,
     pub connection_active_color: Option<String>,
 }
