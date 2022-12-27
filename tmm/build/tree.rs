@@ -1,6 +1,7 @@
-use crate::data;
 use std::collections::HashMap;
 use std::f32::consts::PI;
+
+use crate::data;
 
 const TWO_PI: f32 = 2.0 * PI;
 

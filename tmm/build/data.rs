@@ -1,8 +1,9 @@
-use poe_api::api::*;
 use std::cell::Cell;
 use std::f32::consts::PI;
 use std::ops::Deref;
 use std::path::Path;
+
+use poe_api::api::*;
 
 const TWO_PI: f32 = 2.0 * PI;
 

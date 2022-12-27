@@ -1,5 +1,6 @@
-use crate::error::SkillTreeUrlError;
 use std::str::FromStr;
+
+use crate::error::SkillTreeUrlError;
 
 // This should be an enum with different versions
 #[derive(Clone)]
