@@ -6,6 +6,7 @@ pub use stu::SkillTreeUrl;
 
 pub type Nodes = Vec<u16>;
 
+#[derive(Copy, Clone, Debug)]
 pub enum Version {
     #[cfg(feature = "tree-3_15")]
     V3_15,
@@ -62,6 +63,18 @@ impl std::str::FromStr for Version {
         };
 
         Ok(r)
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de> serde::Deserialize<'de> for Version {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        String::deserialize(deserializer)?
+            .parse()
+            .map_err(serde::de::Error::custom)
     }
 }
 

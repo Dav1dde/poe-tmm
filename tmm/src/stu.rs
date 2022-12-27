@@ -2,14 +2,35 @@ use crate::error::SkillTreeUrlError;
 use std::str::FromStr;
 
 // This should be an enum with different versions
+#[derive(Clone)]
 pub struct SkillTreeUrl {
     pub class: u8,
     pub ascendancy: u8,
     pub nodes: Vec<u16>,
 }
 
+impl std::fmt::Debug for SkillTreeUrl {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("SkillTreeUrl")
+            .field("class", &self.class)
+            .field("ascendancy", &self.ascendancy)
+            .finish_non_exhaustive()
+    }
+}
+
+#[cfg(feature = "serde")]
+impl<'de> serde::Deserialize<'de> for SkillTreeUrl {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        String::deserialize(deserializer)?
+            .parse()
+            .map_err(serde::de::Error::custom)
+    }
+}
+
 impl FromStr for SkillTreeUrl {
-    // TODO this shouldnt be anyhow
     type Err = SkillTreeUrlError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
