@@ -1,5 +1,7 @@
 use std::str::FromStr;
 
+use base64::{prelude::BASE64_URL_SAFE, Engine};
+
 use crate::error::SkillTreeUrlError;
 
 // This should be an enum with different versions
@@ -36,8 +38,9 @@ impl FromStr for SkillTreeUrl {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         // TODO: maybe parse an actual poe url here?
-        let data =
-            base64::decode_config(s, base64::URL_SAFE).map_err(|_| SkillTreeUrlError::Decode)?;
+        let data = BASE64_URL_SAFE
+            .decode(s)
+            .map_err(|_| SkillTreeUrlError::Decode)?;
         if data.len() < 6 {
             return Err(SkillTreeUrlError::Eof);
         }

@@ -65,11 +65,11 @@ pub async fn main(req: Request, _env: Env, ctx: Context) -> Result<Response> {
 
     let body = tmm::render_svg(version, parse_options(req.url()?, stu));
 
-    let (response, response_for_cache) = Response::ok(body)?
+    let mut response = Response::ok(body)?
         .with_content_type("image/svg+xml")?
-        .cache_for(604800)? // 1 Week
-        .cloned()?;
+        .cache_for(604800)?; // 1 Week
 
+    let response_for_cache = response.cloned()?;
     ctx.wait_until(async move {
         let _ = cache.put(&req, response_for_cache).await;
     });

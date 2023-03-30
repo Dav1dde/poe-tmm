@@ -1,4 +1,4 @@
-use worker::{worker_sys, Response, Result};
+use worker::{Response, Result};
 
 pub trait ResponseExt: Sized {
     fn cache_for(self, ttl: u32) -> Result<Self> {
@@ -14,8 +14,6 @@ pub trait ResponseExt: Sized {
 
     fn dup_headers(self) -> Self;
     fn with_header(self, name: &str, value: &str) -> Result<Self>;
-
-    fn cloned(self) -> Result<(Self, Self)>;
 }
 
 impl ResponseExt for Response {
@@ -27,25 +25,5 @@ impl ResponseExt for Response {
     fn with_header(mut self, name: &str, value: &str) -> Result<Self> {
         self.headers_mut().set(name, value)?;
         Ok(self)
-    }
-
-    fn cloned(self) -> Result<(Self, Self)> {
-        let status_code = self.status_code();
-        let headers = self.headers().clone();
-
-        let response1: worker_sys::Response = self.into();
-        let response2 = response1.clone()?;
-
-        let body1 = worker::ResponseBody::Stream(response1);
-        let body2 = worker::ResponseBody::Stream(response2);
-
-        let response1 = worker::Response::from_body(body1)?
-            .with_status(status_code)
-            .with_headers(headers.clone());
-        let response2 = worker::Response::from_body(body2)?
-            .with_status(status_code)
-            .with_headers(headers);
-
-        Ok((response1, response2))
     }
 }
