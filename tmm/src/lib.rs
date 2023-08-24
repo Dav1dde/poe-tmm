@@ -22,12 +22,16 @@ pub enum Version {
     V3_20,
     #[cfg(feature = "tree-3_21")]
     V3_21,
+    #[cfg(feature = "tree-3_22")]
+    V3_22,
 }
 
 impl Version {
     pub fn latest() -> Self {
         cfg_if::cfg_if! {
-            if #[cfg(feature = "tree-3_21")] {
+            if #[cfg(feature = "tree-3_22")] {
+                Self::V3_22
+            } else if #[cfg(feature = "tree-3_21")] {
                 Self::V3_21
             } else if #[cfg(feature = "tree-3_20")] {
                 Self::V3_20
@@ -65,6 +69,8 @@ impl std::str::FromStr for Version {
             "3.20" | "3_20" => Self::V3_20,
             #[cfg(feature = "tree-3_21")]
             "3.21" | "3_21" => Self::V3_21,
+            #[cfg(feature = "tree-3_22")]
+            "3.22" | "3_22" => Self::V3_22,
             _ => return Err(error::ParseVersionError {}),
         };
 
@@ -114,5 +120,7 @@ pub fn render_svg(version: Version, options: Options) -> String {
         Version::V3_20 => templates::tree3_20::Tree::from(options).to_string(),
         #[cfg(feature = "tree-3_21")]
         Version::V3_21 => templates::tree3_21::Tree::from(options).to_string(),
+        #[cfg(feature = "tree-3_22")]
+        Version::V3_22 => templates::tree3_22::Tree::from(options).to_string(),
     }
 }
