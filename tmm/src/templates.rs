@@ -32,6 +32,10 @@ pub(crate) mod tree3_21 {
 pub(crate) mod tree3_22 {
     include!(concat!(env!("OUT_DIR"), "/tree3_22.rs"));
 }
+#[cfg(feature = "tree-3_23")]
+pub(crate) mod tree3_23 {
+    include!(concat!(env!("OUT_DIR"), "/tree3_23.rs"));
+}
 
 const DEFAULT_BACKGROUND_COLOR: Cow<'static, str> = Cow::Borrowed("rgba(0, 0, 0, 0)");
 const DEFAULT_COLOR: Cow<'static, str> = Cow::Borrowed("#64748b");
@@ -80,10 +84,16 @@ macro_rules! template_impl {
                     nodes.push(start_node);
                 }
 
+                let alternate_ascendancy = options
+                    .alternate_ascendancy
+                    .and_then(|aa| Self::alternate_ascendancy_name(options.class, aa))
+                    .map(std::borrow::Cow::Borrowed);
+
                 $name {
                     ascendancy: Self::ascendancy_name(options.class, options.ascendancy)
                         .unwrap_or("unknown")
                         .into(),
+                    alternate_ascendancy,
                     nodes,
                     background_color,
                     node_color,

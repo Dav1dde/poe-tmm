@@ -1,24 +1,24 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::f32::consts::PI;
 
 use crate::data;
 
 const TWO_PI: f32 = 2.0 * PI;
 
-#[derive(Default, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone)]
 pub struct Coord {
     pub x: i32,
     pub y: i32,
 }
 
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub struct Node {
     pub id: u16,
     pub position: Coord,
     pub kind: NodeKind,
 }
 
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub enum NodeKind {
     Normal,
     Mastery,
@@ -29,14 +29,14 @@ pub enum NodeKind {
     },
 }
 
-#[derive(Copy, Clone)]
+#[derive(Debug, Copy, Clone)]
 pub enum AscendancyNodeKind {
     Start,
     Normal,
     Notable,
 }
 
-#[derive(Copy, Clone, Hash, PartialEq, Eq, strum::EnumString, strum::AsRefStr)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq, strum::EnumString, strum::AsRefStr)]
 pub enum Ascendancy {
     Ascendant,
     Juggernaut,
@@ -57,30 +57,44 @@ pub enum Ascendancy {
     Assassin,
     Trickster,
     Saboteur,
+    // 3.23 Ascendancies
+    Warden,
+    Warlock,
+    Primalist,
 }
 
-#[derive(Copy, Clone)]
+impl Ascendancy {
+    pub fn is_alternate(self) -> bool {
+        matches!(self, Self::Warden | Self::Warlock | Self::Primalist)
+    }
+}
+
+#[derive(Debug, Copy, Clone)]
 pub struct NodeRef {
     pub id: u16,
     pub position: Coord,
 }
 
+#[derive(Debug)]
 pub struct Connection {
     pub a: Node,
     pub b: Node,
     pub path: Path,
 }
 
+#[derive(Debug)]
 pub enum Path {
     Arc { sweep: Sweep, radius: u32 },
     Line {},
 }
 
+#[derive(Debug)]
 pub enum Sweep {
     Clockwise,
     CounterClockwise,
 }
 
+#[derive(Debug)]
 pub struct ViewBox {
     pub x: i32,
     pub y: i32,
@@ -88,13 +102,16 @@ pub struct ViewBox {
     pub dy: u32,
 }
 
+#[derive(Debug)]
 pub struct Tree {
     pub view_box: ViewBox,
     pub nodes: Vec<Node>,
     pub connections: Vec<Connection>,
     pub ascendancies: HashMap<Ascendancy, AscendancyInfo>,
+    pub alternate_ascendancies: HashSet<(Ascendancy, AscendancyInfo)>,
 }
 
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub struct AscendancyInfo {
     pub class: u8,
     pub ascendancy: u8,
@@ -116,7 +133,6 @@ pub fn build(tree: &data::Tree) -> Tree {
 
     let mut nodes = Vec::new();
     let mut connections = Vec::new();
-    let mut ascendancies = HashMap::new();
 
     let mut tmp_ascendancies = HashMap::new();
     #[derive(Default)]
@@ -194,8 +210,16 @@ pub fn build(tree: &data::Tree) -> Tree {
     const ASCENDANCY_POS_X: i32 = 7000;
     const ASCENDANCY_POS_Y: i32 = -7700;
 
+    let mut ascendancies = HashMap::new();
+    let mut alternate_ascendancies = HashSet::new();
+
     for (asc_name, asc) in tmp_ascendancies.into_iter() {
-        let diff_x = ASCENDANCY_POS_X - asc.start_position.x;
+        let pos_x_offset = if asc_name.is_alternate() {
+            -ASCENDANCY_POS_X
+        } else {
+            ASCENDANCY_POS_X
+        };
+        let diff_x = pos_x_offset - asc.start_position.x;
         let diff_y = ASCENDANCY_POS_Y - asc.start_position.y;
 
         let update_node = |node: &mut Node| {
@@ -217,6 +241,23 @@ pub fn build(tree: &data::Tree) -> Tree {
             connections.push(connection);
         }
 
+        if asc_name.is_alternate() {
+            let ascendancy = tree.data.alternate_ascendancies.iter().enumerate().find_map(|(i, asc)| (asc.id == asc_name.as_ref()).then_some(i as u8))
+                .unwrap_or_else(|| panic!("expected to find alternate ascendancy {asc_name:?} in the alternate ascendancy array"));
+
+            for (class, _) in tree.data.classes.iter().enumerate() {
+                alternate_ascendancies.insert((
+                    asc_name,
+                    AscendancyInfo {
+                        class: class as u8,
+                        ascendancy,
+                        start_node: asc.start_node,
+                    },
+                ));
+            }
+            continue;
+        }
+
         let (class, ascendancy) = tree
             .data
             .classes
@@ -230,7 +271,7 @@ pub fn build(tree: &data::Tree) -> Tree {
                     .find(|(_, asc)| asc.name == asc_name.as_ref())
                     .map(|(asc_i, _)| (class_i, asc_i + 1))
             })
-            .expect("ascendancy {asc_name} not found in classes array");
+            .unwrap_or((0, 0));
 
         ascendancies.insert(
             asc_name,
@@ -261,6 +302,7 @@ pub fn build(tree: &data::Tree) -> Tree {
         nodes,
         connections,
         ascendancies,
+        alternate_ascendancies,
     }
 }
 

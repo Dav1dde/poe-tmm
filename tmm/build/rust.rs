@@ -47,6 +47,7 @@ pub fn render(tree: &Tree, path: &str, output: &mut dyn Write) -> anyhow::Result
        #[template(path = "{path}", escape = "html")]
         pub struct Tree {{
             pub ascendancy: CowString,
+            pub alternate_ascendancy: Option<CowString>,
             pub nodes: Vec<u16>,
             pub background_color: CowString,
             pub node_color: CowString,
@@ -93,6 +94,24 @@ pub fn render(tree: &Tree, path: &str, output: &mut dyn Write) -> anyhow::Result
                     _ => None,
                 }}
             }}
+
+            #[allow(clippy::match_single_binding)]
+            pub(crate) fn alternate_ascendancy_name(class: u8, ascendancy: u8) -> Option<&'static str> {{
+                match (class, ascendancy) {{
+    "#);
+    for (name, info) in tree.alternate_ascendancies.iter() {
+        w!(
+            "({}, {}) => Some(\"{}\"),",
+            info.class,
+            info.ascendancy,
+            name.as_ref()
+        );
+    }
+    w!(r#"
+                    _ => None,
+                }}
+            }}
+
 
         }}
     "#);

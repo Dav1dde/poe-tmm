@@ -38,3 +38,8 @@
 	url = https://github.com/grindinggear/skilltree-export.git
 	branch = master
 	shallow = true
+[submodule "data/tree-3.23"]
+	path = data/tree-3.23
+	url = https://github.com/grindinggear/skilltree-export.git
+	branch = master
+	shallow = true

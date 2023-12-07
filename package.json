@@ -6,6 +6,7 @@
         "miniflare": "miniflare"
     },
     "dependencies": {
+        "miniflare": "2",
         "wrangler": "^2.13.0"
     }
 }

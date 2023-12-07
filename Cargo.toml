@@ -4,9 +4,10 @@ members = [
     "tmm",
     "worker"
 ]
+resolver = "2"
 
 [workspace.dependencies]
-poe-api = { git = "https://github.com/Dav1dde/poe-rs/", rev = "ab3a60a", default-features = false }
+poe-api = { git = "https://github.com/Dav1dde/poe-rs/", rev = "619a8b3", default-features = false }
 worker = { git = "https://github.com/Dav1dde/workers-rs.git", rev = "48e29cd", package = "worker" }
 
 serde = { version = "1", features = ["derive"] }

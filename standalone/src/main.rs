@@ -89,6 +89,7 @@ async fn tree(
     let options = tmm::Options {
         class: stu.class,
         ascendancy: stu.ascendancy,
+        alternate_ascendancy: stu.alternate_ascendancy,
         nodes: stu.nodes,
         background_color: query.background_color.map(Into::into),
         color: query.color.map(Into::into),

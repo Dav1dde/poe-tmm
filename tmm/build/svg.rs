@@ -28,6 +28,13 @@ svg {
 .ascendancy.{{ ascendancy }} {
     display: block;
 }
+{% match alternate_ascendancy %}
+  {% when Some with (alternate_ascendancy) %}
+.ascendancy.{{ alternate_ascendancy }} {
+    display: block;
+}
+  {% when None %}
+{% endmatch %}
 
 .connections {
     color: {{ connection_color }};
