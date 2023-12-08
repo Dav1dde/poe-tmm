@@ -9,7 +9,7 @@ use crate::error::SkillTreeUrlError;
 pub struct SkillTreeUrl {
     pub class: u8,
     pub ascendancy: u8,
-    pub alternate_ascendancy: Option<u8>,
+    pub alternate_ascendancy: u8,
     pub nodes: Vec<u16>,
 }
 
@@ -52,10 +52,8 @@ impl FromStr for SkillTreeUrl {
             | (data[2] as u32) << 8
             | data[3] as u32;
         let class = data[4];
-        // assume 4 bit per ascendancy for now
-        let ascendancy = data[5] & 0b1111;
-        // assume top bit is a bit flag wether there is an alt ascendancy
-        let alternate_ascendancy = (data[5] >> 7 == 1).then_some(data[5] >> 4 & 0b111);
+        let ascendancy = data[5] & 0b11;
+        let alternate_ascendancy = (data[5] >> 2) & 0b11;
 
         match version {
             4 => {

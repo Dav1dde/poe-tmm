@@ -242,15 +242,22 @@ pub fn build(tree: &data::Tree) -> Tree {
         }
 
         if asc_name.is_alternate() {
-            let ascendancy = tree.data.alternate_ascendancies.iter().enumerate().find_map(|(i, asc)| (asc.id == asc_name.as_ref()).then_some(i as u8))
-                .unwrap_or_else(|| panic!("expected to find alternate ascendancy {asc_name:?} in the alternate ascendancy array"));
+            let ascendancy = tree
+                .data
+                .alternate_ascendancies
+                .iter()
+                .enumerate()
+                .find_map(|(i, asc)| (asc.id == asc_name.as_ref()).then_some(i + 1))
+                .unwrap_or_else(|| panic!(
+                    "expected to find alternate ascendancy {asc_name:?} in the alternate ascendancy array"
+                ));
 
             for (class, _) in tree.data.classes.iter().enumerate() {
                 alternate_ascendancies.insert((
                     asc_name,
                     AscendancyInfo {
                         class: class as u8,
-                        ascendancy,
+                        ascendancy: ascendancy as u8,
                         start_node: asc.start_node,
                     },
                 ));

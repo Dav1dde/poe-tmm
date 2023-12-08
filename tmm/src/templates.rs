@@ -84,15 +84,16 @@ macro_rules! template_impl {
                     nodes.push(start_node);
                 }
 
-                let alternate_ascendancy = options
-                    .alternate_ascendancy
-                    .and_then(|aa| Self::alternate_ascendancy_name(options.class, aa))
-                    .map(std::borrow::Cow::Borrowed);
+                let ascendancy = Self::ascendancy_name(options.class, options.ascendancy)
+                    .unwrap_or("unknown")
+                    .into();
+
+                let alternate_ascendancy =
+                    Self::alternate_ascendancy_name(options.class, options.alternate_ascendancy)
+                        .map(std::borrow::Cow::Borrowed);
 
                 $name {
-                    ascendancy: Self::ascendancy_name(options.class, options.ascendancy)
-                        .unwrap_or("unknown")
-                        .into(),
+                    ascendancy,
                     alternate_ascendancy,
                     nodes,
                     background_color,

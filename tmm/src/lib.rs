@@ -100,7 +100,7 @@ impl<'de> serde::Deserialize<'de> for Version {
 pub struct Options {
     pub class: u8,
     pub ascendancy: u8,
-    pub alternate_ascendancy: Option<u8>,
+    pub alternate_ascendancy: u8,
     pub nodes: Nodes,
     pub background_color: Option<String>,
     pub color: Option<String>,
