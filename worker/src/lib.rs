@@ -4,7 +4,7 @@ mod utils;
 
 use utils::ResponseExt;
 
-fn parse_options(url: Url, stu: tmm::SkillTreeUrl) -> tmm::Options {
+fn parse_options(url: &Url, stu: tmm::SkillTreeUrl) -> tmm::Options {
     let mut options = tmm::Options {
         class: stu.class,
         ascendancy: stu.ascendancy,
@@ -64,10 +64,12 @@ pub async fn main(req: Request, _env: Env, ctx: Context) -> Result<Response> {
         Err(_) => return Response::error("Invalid STU", 400),
     };
 
-    let body = tmm::render_svg(version, parse_options(req.url()?, stu));
+    let url = req.url()?;
+    let body = tmm::render_svg(version, parse_options(&url, stu));
 
     let mut response = Response::ok(body)?
         .with_content_type("image/svg+xml")?
+        .with_header("Access-Control-Allow-Origin", "*")?
         .cache_for(604800)?; // 1 Week
 
     let response_for_cache = response.cloned()?;
