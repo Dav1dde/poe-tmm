@@ -11,6 +11,4 @@ yarn-error.log
 .env
 .mf/
 .cache
-
-tmm/src/templates/
-tmm/templates/
+out/
