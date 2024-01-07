@@ -1,7 +1,6 @@
 use std::cell::Cell;
 use std::f32::consts::PI;
 use std::ops::Deref;
-use std::path::Path;
 
 use poe_api::api::*;
 
@@ -20,9 +19,8 @@ pub struct Tree {
 }
 
 impl Tree {
-    pub fn read(path: impl AsRef<Path>) -> anyhow::Result<Self> {
-        let f = std::fs::read_to_string(path)?;
-        let data: poe_api::api::SkillTreeData = serde_json::from_str(&f)?;
+    pub fn new(s: &str) -> anyhow::Result<Self> {
+        let data: poe_api::api::SkillTreeData = serde_json::from_str(s)?;
         Ok(Self { data })
     }
 

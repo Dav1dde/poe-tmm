@@ -3,13 +3,18 @@ use std::io::Write;
 
 use crate::tree::{AscendancyNodeKind, NodeKind, Path, Sweep, Tree};
 
-const STYLES_TEMPLATE: &str = r#"
+const STYLES: &str = r#"
 svg {
-    background-color: {{ background_color }};
+    --bg-color: #1e293b;
+    --active-color: #38bdf8;
+    --default-color: #64748b;
+
+    background-color: var(--bg-color);
+    color: var(--default-color);
+    cursor: move;
 }
 
 .nodes {
-    color: {{ node_color }};
 }
 
 .nodes circle {
@@ -21,38 +26,15 @@ svg {
     stroke-width: 40;
 }
 
-.ascendancy {
+.ascendancy:not(.active) {
     display: none;
 }
 
-.ascendancy.{{ ascendancy }} {
-    display: block;
-}
-{% match alternate_ascendancy %}
-  {% when Some with (alternate_ascendancy) %}
-.ascendancy.{{ alternate_ascendancy }} {
-    display: block;
-}
-  {% when None %}
-{% endmatch %}
-
 .connections {
-    color: {{ connection_color }};
-}
-
-{% for node in nodes -%}
-#n{{ node }}{% if !loop.last %}, {% endif -%}
-{%- endfor %} {
-    color: {{ node_active_color }};
-}
-
-{% for (a, b) in nodes|connections -%}
-#c{{ a }}-{{ b }}{% if !loop.last %}, {% endif -%}
-{%- endfor %} {
-    color: {{ connection_active_color }};
-    stroke-width: 35;
 }
 "#;
+const SCRIPT: &str = include_str!("svg.js");
+const SCRIPT_MOUSE: &str = include_str!("svg-mouse.js");
 
 const OFFSET: u32 = 100;
 
@@ -71,7 +53,7 @@ pub fn render(tree: &Tree, output: &mut dyn Write) -> anyhow::Result<()> {
         tree.view_box.dy + OFFSET * 2,
     );
 
-    w!(r#"<style>{}</style>"#, STYLES_TEMPLATE);
+    w!(r#"<style>{STYLES}</style>"#);
 
     w!(r#"<g class="connections" fill="none" stroke-width="20" stroke="currentColor">"#);
     for connection in &tree.connections {
@@ -131,6 +113,33 @@ pub fn render(tree: &Tree, output: &mut dyn Write) -> anyhow::Result<()> {
         );
     }
     w!("</g>");
+
+    w!(r#"<script><![CDATA[(function() {{"#);
+    w!(r#"window._ACTIVE_COLOR = "green";"#);
+    w!(r#"window._ascendancy_name = function(classId, ascendancyId) {{"#);
+    for (name, info) in tree.ascendancies.iter() {
+        w!(
+            r#"if (classId === {} && ascendancyId === {}) {{ return "{}" }}"#,
+            info.class,
+            info.ascendancy,
+            name.as_ref()
+        );
+    }
+    w!(r#"}}"#);
+    w!(r#"window._alternate_ascendancy_name = function(classId, ascendancyId) {{"#);
+    for (name, info) in tree.alternate_ascendancies.iter() {
+        w!(
+            r#"if (classId === {} && ascendancyId === {}) {{ return "{}" }}"#,
+            info.class,
+            info.ascendancy,
+            name.as_ref()
+        );
+    }
+    w!(r#"}}"#);
+    w!(r#"}})()]]></script>"#);
+
+    w!(r#"<script><![CDATA[(function() {{ {SCRIPT_MOUSE} }})()]]></script>"#);
+    w!(r#"<script><![CDATA[addEventListener('load', function() {{ {SCRIPT} }})]]></script>"#);
 
     w!("</svg>");
 
