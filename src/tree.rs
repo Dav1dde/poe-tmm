@@ -11,11 +11,12 @@ pub struct Coord {
     pub y: i32,
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Clone)]
 pub struct Node {
     pub id: u16,
     pub position: Coord,
     pub kind: NodeKind,
+    pub meta: NodeMeta,
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -27,6 +28,23 @@ pub enum NodeKind {
         kind: AscendancyNodeKind,
         ascendancy: Ascendancy,
     },
+}
+
+impl NodeKind {
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            NodeKind::Normal => "Normal",
+            NodeKind::Mastery => "Mastery",
+            NodeKind::Keystone => "Keystone",
+            NodeKind::Ascendancy { .. } => "Ascendancy",
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
+pub struct NodeMeta {
+    pub name: String,
+    pub stats: Vec<String>,
 }
 
 #[derive(Debug, Copy, Clone)]
@@ -73,12 +91,13 @@ impl Ascendancy {
 pub struct NodeRef {
     pub id: u16,
     pub position: Coord,
+    pub kind: NodeKind,
 }
 
 #[derive(Debug)]
 pub struct Connection {
-    pub a: Node,
-    pub b: Node,
+    pub a: NodeRef,
+    pub b: NodeRef,
     pub path: Path,
 }
 
@@ -151,12 +170,16 @@ pub fn build(tree: &data::Tree) -> Tree {
                 id: node.id(),
                 position: Coord { x, y },
                 kind: node_kind(&node),
+                meta: NodeMeta {
+                    name: node.name.clone(),
+                    stats: node.stats.clone(),
+                },
             };
 
             let (nodes, connections) =
-                if let NodeKind::Ascendancy { ascendancy, .. } = tree_node.kind {
+                if let NodeKind::Ascendancy { ascendancy, .. } = &tree_node.kind {
                     let asc = tmp_ascendancies
-                        .entry(ascendancy)
+                        .entry(*ascendancy)
                         .or_insert_with(TmpAsc::default);
                     if node.is_ascendancy_start {
                         asc.start_node = node.id();
@@ -169,7 +192,6 @@ pub fn build(tree: &data::Tree) -> Tree {
 
                     (&mut nodes, &mut connections)
                 };
-            nodes.push(tree_node);
 
             for out_node in node
                 .out()
@@ -193,8 +215,12 @@ pub fn build(tree: &data::Tree) -> Tree {
                 };
 
                 let connection = Connection {
-                    a: tree_node,
-                    b: Node {
+                    a: NodeRef {
+                        id: tree_node.id,
+                        position: tree_node.position,
+                        kind: tree_node.kind,
+                    },
+                    b: NodeRef {
                         id: out_node.id(),
                         position: Coord { x: out_x, y: out_y },
                         kind: node_kind(&out_node),
@@ -204,6 +230,8 @@ pub fn build(tree: &data::Tree) -> Tree {
 
                 connections.push(connection);
             }
+
+            nodes.push(tree_node);
         }
     }
 
@@ -222,22 +250,24 @@ pub fn build(tree: &data::Tree) -> Tree {
         let diff_x = pos_x_offset - asc.start_position.x;
         let diff_y = ASCENDANCY_POS_Y - asc.start_position.y;
 
-        let update_node = |node: &mut Node| {
-            node.position = Coord {
-                x: diff_x + node.position.x,
-                y: diff_y + node.position.y,
+        macro_rules! update_node {
+            ($node:expr) => {
+                $node.position = Coord {
+                    x: diff_x + $node.position.x,
+                    y: diff_y + $node.position.y,
+                };
             };
-        };
+        }
 
         for mut node in asc.nodes {
-            update_node(&mut node);
+            update_node!(node);
             update_min_max(node.position.x, node.position.y);
             nodes.push(node);
         }
 
         for mut connection in asc.connections {
-            update_node(&mut connection.a);
-            update_node(&mut connection.b);
+            update_node!(connection.a);
+            update_node!(connection.b);
             connections.push(connection);
         }
 

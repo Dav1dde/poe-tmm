@@ -18,6 +18,7 @@ svg {
 }
 
 .nodes circle {
+    cursor: default;
 }
 .nodes circle.keystone {
 }
@@ -106,10 +107,13 @@ pub fn render(tree: &Tree, output: &mut dyn Write) -> anyhow::Result<()> {
             _ => r#"r="50""#.into(),
         };
         w!(
-            r#"<circle cx="{}" cy="{}" id="n{}" {attrs} />"#,
+            r#"<circle cx="{}" cy="{}" id="n{}" {attrs} data-name="{}" data-stats="{}" data-kind="{}" />"#,
             node.position.x,
             node.position.y,
-            node.id
+            node.id,
+            node.meta.name,
+            node.meta.stats.join(";;"),
+            node.kind.as_str(),
         );
     }
     w!("</g>");
