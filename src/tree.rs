@@ -21,6 +21,7 @@ pub struct Node {
 
 #[derive(Debug, Copy, Clone)]
 pub enum NodeKind {
+    Jewel,
     Normal,
     Mastery,
     Keystone,
@@ -33,6 +34,7 @@ pub enum NodeKind {
 impl NodeKind {
     pub fn as_str(&self) -> &'static str {
         match self {
+            NodeKind::Jewel => "Jewel",
             NodeKind::Normal => "Normal",
             NodeKind::Mastery => "Mastery",
             NodeKind::Keystone => "Keystone",
@@ -346,13 +348,9 @@ pub fn build(tree: &data::Tree) -> Tree {
 }
 
 fn node_kind(node: &data::Node) -> NodeKind {
-    let mut kind = NodeKind::Normal;
-    if node.is_keystone {
-        kind = NodeKind::Keystone;
-    } else if node.is_mastery {
-        kind = NodeKind::Mastery;
-    } else if node.ascendancy_name.is_some() {
-        kind = NodeKind::Ascendancy {
+    if node.ascendancy_name.is_some() {
+        // Check ascendancies first, an ascendancy can also be a Jewel socket, etc.
+        NodeKind::Ascendancy {
             kind: match (node.is_ascendancy_start, node.is_notable) {
                 (true, _) => AscendancyNodeKind::Start,
                 (_, true) => AscendancyNodeKind::Notable,
@@ -365,9 +363,15 @@ fn node_kind(node: &data::Node) -> NodeKind {
                 .parse()
                 .expect("invalid/unknown ascendancy name"),
         }
+    } else if node.is_keystone {
+        NodeKind::Keystone
+    } else if node.is_mastery {
+        NodeKind::Mastery
+    } else if node.is_jewel_socket {
+        NodeKind::Jewel
+    } else {
+        NodeKind::Normal
     }
-
-    kind
 }
 
 fn filter_group(group: &data::Group) -> bool {

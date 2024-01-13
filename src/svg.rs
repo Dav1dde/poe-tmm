@@ -28,7 +28,6 @@ svg {
 }
 .nodes circle.mastery {
     color: transparent;
-    stroke-width: 40;
 }
 
 .ascendancy:not(.active) {
@@ -97,7 +96,7 @@ pub fn render(tree: &Tree, output: &mut dyn Write) -> anyhow::Result<()> {
     w!(r#"<g class="nodes" stroke="currentColor" fill="currentColor">"#);
     for node in &tree.nodes {
         let attrs: Cow<'static, str> = match node.kind {
-            NodeKind::Mastery => r#"r="35" class="mastery""#.into(),
+            NodeKind::Mastery => r#"r="50" class="mastery""#.into(),
             NodeKind::Keystone => r#"r="80" class="keystone""#.into(),
             NodeKind::Ascendancy { kind, ascendancy } => {
                 let name = ascendancy.as_ref();
@@ -116,7 +115,7 @@ pub fn render(tree: &Tree, output: &mut dyn Write) -> anyhow::Result<()> {
             node.position.y,
             node.id,
             node.meta.name,
-            node.meta.stats.join(";;"),
+            encode(&node.meta.stats),
             node.kind.as_str(),
         );
     }
@@ -152,4 +151,11 @@ pub fn render(tree: &Tree, output: &mut dyn Write) -> anyhow::Result<()> {
     w!("</svg>");
 
     Ok(())
+}
+
+fn encode(s: &[String]) -> String {
+    s.iter()
+        .map(|s| s.replace('\n', "&#010;"))
+        .collect::<Vec<_>>()
+        .join(";;")
 }
