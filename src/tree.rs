@@ -5,13 +5,13 @@ use crate::data;
 
 const TWO_PI: f32 = 2.0 * PI;
 
-#[derive(Debug, Default, Copy, Clone)]
+#[derive(Debug, Default, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Coord {
     pub x: i32,
     pub y: i32,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Node {
     pub id: u16,
     pub position: Coord,
@@ -19,10 +19,11 @@ pub struct Node {
     pub meta: NodeMeta,
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum NodeKind {
     Jewel,
     Normal,
+    Notable,
     Mastery,
     Keystone,
     Ascendancy {
@@ -36,6 +37,7 @@ impl NodeKind {
         match self {
             NodeKind::Jewel => "Jewel",
             NodeKind::Normal => "Normal",
+            NodeKind::Notable => "Notable",
             NodeKind::Mastery => "Mastery",
             NodeKind::Keystone => "Keystone",
             NodeKind::Ascendancy { .. } => "Ascendancy",
@@ -43,13 +45,13 @@ impl NodeKind {
     }
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct NodeMeta {
     pub name: String,
     pub stats: Vec<String>,
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum AscendancyNodeKind {
     Start,
     Normal,
@@ -91,27 +93,27 @@ impl Ascendancy {
     }
 }
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct NodeRef {
     pub id: u16,
     pub position: Coord,
     pub kind: NodeKind,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Connection {
     pub a: NodeRef,
     pub b: NodeRef,
     pub path: Path,
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Path {
     Arc { sweep: Sweep, radius: u32 },
     Line {},
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Sweep {
     Clockwise,
     CounterClockwise,
@@ -333,6 +335,9 @@ pub fn build(tree: &data::Tree) -> Tree {
     let dx = (max_x - min_x) as u32;
     let dy = (max_y - min_y) as u32;
 
+    nodes.sort();
+    connections.sort();
+
     Tree {
         view_box: ViewBox {
             x: min_x,
@@ -367,6 +372,8 @@ fn node_kind(node: &data::Node) -> NodeKind {
         NodeKind::Keystone
     } else if node.is_mastery {
         NodeKind::Mastery
+    } else if node.is_notable {
+        NodeKind::Notable
     } else if node.is_jewel_socket {
         NodeKind::Jewel
     } else {
