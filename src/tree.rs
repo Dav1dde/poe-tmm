@@ -1,4 +1,4 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::{BTreeMap, BTreeSet};
 use std::f32::consts::PI;
 
 use crate::data;
@@ -54,7 +54,9 @@ pub enum AscendancyNodeKind {
     Notable,
 }
 
-#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq, strum::EnumString, strum::AsRefStr)]
+#[derive(
+    Debug, Copy, Clone, Hash, PartialEq, Eq, PartialOrd, Ord, strum::EnumString, strum::AsRefStr,
+)]
 pub enum Ascendancy {
     Ascendant,
     Juggernaut,
@@ -126,11 +128,11 @@ pub struct Tree {
     pub view_box: ViewBox,
     pub nodes: Vec<Node>,
     pub connections: Vec<Connection>,
-    pub ascendancies: HashMap<Ascendancy, AscendancyInfo>,
-    pub alternate_ascendancies: HashSet<(Ascendancy, AscendancyInfo)>,
+    pub ascendancies: BTreeMap<Ascendancy, AscendancyInfo>,
+    pub alternate_ascendancies: BTreeSet<(Ascendancy, AscendancyInfo)>,
 }
 
-#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct AscendancyInfo {
     pub class: u8,
     pub ascendancy: u8,
@@ -153,7 +155,7 @@ pub fn build(tree: &data::Tree) -> Tree {
     let mut nodes = Vec::new();
     let mut connections = Vec::new();
 
-    let mut tmp_ascendancies = HashMap::new();
+    let mut tmp_ascendancies = BTreeMap::new();
     #[derive(Default)]
     struct TmpAsc {
         start_node: u16,
@@ -238,8 +240,8 @@ pub fn build(tree: &data::Tree) -> Tree {
     const ASCENDANCY_POS_X: i32 = 7000;
     const ASCENDANCY_POS_Y: i32 = -7700;
 
-    let mut ascendancies = HashMap::new();
-    let mut alternate_ascendancies = HashSet::new();
+    let mut ascendancies = BTreeMap::new();
+    let mut alternate_ascendancies = BTreeSet::new();
 
     for (asc_name, asc) in tmp_ascendancies.into_iter() {
         let pos_x_offset = if asc_name.is_alternate() {
