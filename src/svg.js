@@ -3,7 +3,10 @@ const root = document.getElementsByTagName('svg')[0];
 const CONNECTIONS = [...root.querySelectorAll('.connections > *')]
     .map(element => element.id.substring(1).split('-').map(n => parseInt(n)));
 
-function load(data) {
+
+document.adoptedStyleSheets = [new CSSStyleSheet(), new CSSStyleSheet()];
+
+window.tree_load = function(data) {
     const css = new CSSStyleSheet();
 
     // Activate nodes.
@@ -27,7 +30,15 @@ function load(data) {
         display: block !important;
     }`);
 
-    document.adoptedStyleSheets = [css];
+    document.adoptedStyleSheets[0] = css;
 }
 
-window.tree_load = load;
+window.tree_highlight = function(nodes) {
+    const css = new CSSStyleSheet();
+
+    for (node of nodes) {
+        css.insertRule(`#n${node} { color: var(--highlight-color) !important; stroke-opacity: 1; }`);
+    }
+
+    document.adoptedStyleSheets[1] = css;
+}

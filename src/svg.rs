@@ -8,7 +8,7 @@ svg {
     --bg-color: #1e293b;
     --active-color: #38bdf8;
     --default-color: #64748b;
-    --hover-color: #facc15;
+    --highlight-color: #facc15;
 
     background-color: var(--bg-color);
     color: var(--default-color);
@@ -22,7 +22,7 @@ svg {
     stroke-opacity: 0;
 }
 .nodes circle:hover {
-    color: var(--hover-color);
+    color: var(--highlight-color) !important;
 }
 .nodes circle.keystone {
 }
