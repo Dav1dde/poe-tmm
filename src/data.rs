@@ -103,10 +103,13 @@ impl<'a> Node<'a> {
     }
 
     pub fn out(&self) -> impl Iterator<Item = Node<'_>> {
+        let connections = self.inner.connections.iter().map(|con| con.id.to_string());
         self.inner
             .out
-            .iter()
-            .map(|id| (id, self.parent.data.nodes.get(id).unwrap()))
+            .clone()
+            .into_iter()
+            .chain(connections)
+            .filter_map(|id| Some((id.clone(), self.parent.data.nodes.get(&id)?)))
             .map(|(id, node)| Node {
                 id: id.parse().unwrap(),
                 inner: node,
@@ -115,7 +118,7 @@ impl<'a> Node<'a> {
             })
     }
 
-    fn group(&self) -> &SkillTreeGroup {
+    pub fn group(&self) -> &SkillTreeGroup {
         if let Some(group) = self.groupx.get() {
             return group;
         }

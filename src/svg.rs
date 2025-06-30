@@ -71,7 +71,7 @@ pub fn render(tree: &Tree, output: &mut dyn Write) -> anyhow::Result<()> {
 
         let class = match connection.a.kind {
             NodeKind::Ascendancy { ascendancy, .. } => {
-                format!(r#"class="ascendancy {}""#, ascendancy.as_ref())
+                format!(r#"class="ascendancy {}""#, ascendancy.as_str())
             }
             _ => String::new(),
         };
@@ -99,7 +99,7 @@ pub fn render(tree: &Tree, output: &mut dyn Write) -> anyhow::Result<()> {
             NodeKind::Mastery => r#"r="50" class="mastery""#.into(),
             NodeKind::Keystone => r#"r="80" class="keystone""#.into(),
             NodeKind::Ascendancy { kind, ascendancy } => {
-                let name = ascendancy.as_ref();
+                let name = ascendancy.as_str();
                 use AscendancyNodeKind::*;
                 match kind {
                     Start => "".into(),
@@ -129,7 +129,7 @@ pub fn render(tree: &Tree, output: &mut dyn Write) -> anyhow::Result<()> {
             r#"if (classId === {} && ascendancyId === {}) {{ return "{}" }}"#,
             info.class,
             info.ascendancy,
-            name.as_ref()
+            name.as_str()
         );
     }
     w!(r#"}}"#);
@@ -139,7 +139,7 @@ pub fn render(tree: &Tree, output: &mut dyn Write) -> anyhow::Result<()> {
             r#"if (classId === {} && ascendancyId === {}) {{ return "{}" }}"#,
             info.class,
             info.ascendancy,
-            name.as_ref()
+            name.as_str()
         );
     }
     w!(r#"}}"#);

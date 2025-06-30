@@ -1,45 +1,49 @@
 out = "./out"
 
-[[tree]]
-name = "3.15"
-url = "https://raw.githubusercontent.com/grindinggear/skilltree-export/350f595608c606fff9a935a5fd86c797eef35315/data.json"
+# [[tree]]
+# name = "3.15"
+# url = "https://raw.githubusercontent.com/grindinggear/skilltree-export/350f595608c606fff9a935a5fd86c797eef35315/data.json"
+# 
+# [[tree]]
+# name = "3.16"
+# url = "https://raw.githubusercontent.com/grindinggear/skilltree-export/6b9c3c1effba3d7a80f43c2c890a3fdc40d2e839/data.json"
+# 
+# [[tree]]
+# name = "3.17"
+# url = "https://raw.githubusercontent.com/grindinggear/skilltree-export/979bf065673bc7a32eca80fe26a5e35a8888b2e7/data.json"
+# 
+# [[tree]]
+# name = "3.18"
+# url = "https://raw.githubusercontent.com/grindinggear/skilltree-export/3.18.1/data.json"
+# 
+# [[tree]]
+# name = "3.19"
+# url = "https://raw.githubusercontent.com/grindinggear/skilltree-export/3.19.0/data.json"
+# 
+# [[tree]]
+# name = "3.20"
+# url = "https://raw.githubusercontent.com/grindinggear/skilltree-export/3.20.0/data.json"
+# 
+# [[tree]]
+# name = "3.21"
+# url = "https://raw.githubusercontent.com/grindinggear/skilltree-export/3.21.0/data.json"
+# 
+# [[tree]]
+# name = "3.22"
+# url = "https://raw.githubusercontent.com/grindinggear/skilltree-export/c21c7a3408a497c80c5a0646f2ac2219dfcfba1e/data.json"
+# 
+# [[tree]]
+# name = "3.23"
+# url = "https://raw.githubusercontent.com/grindinggear/skilltree-export/3.23.0/data.json"
+# 
+# [[tree]]
+# name = "3.24"
+# url = "https://raw.githubusercontent.com/grindinggear/skilltree-export/3.24.0/data.json"
+# 
+# [[tree]]
+# name = "3.25"
+# url = "https://raw.githubusercontent.com/grindinggear/skilltree-export/3.25.0/data.json"
 
 [[tree]]
-name = "3.16"
-url = "https://raw.githubusercontent.com/grindinggear/skilltree-export/6b9c3c1effba3d7a80f43c2c890a3fdc40d2e839/data.json"
-
-[[tree]]
-name = "3.17"
-url = "https://raw.githubusercontent.com/grindinggear/skilltree-export/979bf065673bc7a32eca80fe26a5e35a8888b2e7/data.json"
-
-[[tree]]
-name = "3.18"
-url = "https://raw.githubusercontent.com/grindinggear/skilltree-export/3.18.1/data.json"
-
-[[tree]]
-name = "3.19"
-url = "https://raw.githubusercontent.com/grindinggear/skilltree-export/3.19.0/data.json"
-
-[[tree]]
-name = "3.20"
-url = "https://raw.githubusercontent.com/grindinggear/skilltree-export/3.20.0/data.json"
-
-[[tree]]
-name = "3.21"
-url = "https://raw.githubusercontent.com/grindinggear/skilltree-export/3.21.0/data.json"
-
-[[tree]]
-name = "3.22"
-url = "https://raw.githubusercontent.com/grindinggear/skilltree-export/c21c7a3408a497c80c5a0646f2ac2219dfcfba1e/data.json"
-
-[[tree]]
-name = "3.23"
-url = "https://raw.githubusercontent.com/grindinggear/skilltree-export/3.23.0/data.json"
-
-[[tree]]
-name = "3.24"
-url = "https://raw.githubusercontent.com/grindinggear/skilltree-export/3.24.0/data.json"
-
-[[tree]]
-name = "3.25"
-url = "https://raw.githubusercontent.com/grindinggear/skilltree-export/3.25.0/data.json"
+name = "4.0"
+path = "data4_0.json"

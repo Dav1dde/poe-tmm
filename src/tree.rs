@@ -58,9 +58,7 @@ pub enum AscendancyNodeKind {
     Notable,
 }
 
-#[derive(
-    Debug, Copy, Clone, Hash, PartialEq, Eq, PartialOrd, Ord, strum::EnumString, strum::AsRefStr,
-)]
+#[derive(Debug, Copy, Clone, Hash, PartialEq, Eq, PartialOrd, Ord)]
 pub enum Ascendancy {
     Ascendant,
     Juggernaut,
@@ -85,11 +83,104 @@ pub enum Ascendancy {
     Warden,
     Warlock,
     Primalist,
+    // PoE 2
+    BloodMage,
+    Infernalist,
+    Titan,
+    Warbringer,
+    WitchHunter,
+    GemlingLegionaire,
+    Invoker,
+    AcolyteOfChayula,
+    Stormweaver,
+    Chronomancer,
 }
 
 impl Ascendancy {
     pub fn is_alternate(self) -> bool {
         matches!(self, Self::Warden | Self::Warlock | Self::Primalist)
+    }
+
+    pub fn as_str(&self) -> &'static str {
+        match self {
+            Self::Ascendant => "Ascendant",
+            Self::Assassin => "Assassin",
+            Self::Berserker => "Berserker",
+            Self::Champion => "Champion",
+            Self::Chieftain => "Chieftain",
+            Self::Deadeye => "Deadeye",
+            Self::Elementalist => "Elementalist",
+            Self::Gladiator => "Gladiator",
+            Self::Guardian => "Guardian",
+            Self::Hierophant => "Hierophant",
+            Self::Inquisitor => "Inquisitor",
+            Self::Juggernaut => "Juggernaut",
+            Self::Necromancer => "Necromancer",
+            Self::Occultist => "Occultist",
+            Self::Pathfinder => "Pathfinder",
+            Self::Raider => "Raider",
+            Self::Warden => "Warden",
+            Self::Saboteur => "Saboteur",
+            Self::Warlock => "Warlock",
+            Self::Primalist => "Primalist",
+            Self::Slayer => "Slayer",
+            Self::Trickster => "Trickster",
+            Self::BloodMage => "Blood Mage",
+            Self::Infernalist => "Infernalist",
+            Self::Titan => "Titan",
+            Self::Warbringer => "Warbringer",
+            Self::WitchHunter => "Witchhunter",
+            Self::GemlingLegionaire => "Gemling Legionaire",
+            Self::Invoker => "Invoker",
+            Self::AcolyteOfChayula => "Acolyte of Chayula",
+            Self::Stormweaver => "Stormweaver",
+            Self::Chronomancer => "Chronomancer",
+        }
+    }
+}
+
+impl std::str::FromStr for Ascendancy {
+    type Err = ();
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Ok(match s {
+            "Ascendant" => Self::Ascendant,
+            "Assassin" => Self::Assassin,
+            "Berserker" => Self::Berserker,
+            "Champion" => Self::Champion,
+            "Chieftain" => Self::Chieftain,
+            "Deadeye" => Self::Deadeye,
+            "Elementalist" => Self::Elementalist,
+            "Gladiator" => Self::Gladiator,
+            "Guardian" => Self::Guardian,
+            "Hierophant" => Self::Hierophant,
+            "Inquisitor" => Self::Inquisitor,
+            "Juggernaut" => Self::Juggernaut,
+            "Necromancer" => Self::Necromancer,
+            "Occultist" => Self::Occultist,
+            "Pathfinder" => Self::Pathfinder,
+            "Raider" => Self::Raider,
+            "Warden" => Self::Warden,
+            "Saboteur" => Self::Saboteur,
+            "Slayer" => Self::Slayer,
+            "Trickster" => Self::Trickster,
+
+            "Warlock" => Self::Warlock,
+            "Primalist" => Self::Primalist,
+
+            "Blood Mage" => Self::BloodMage,
+            "Infernalist" => Self::Infernalist,
+            "Titan" => Self::Titan,
+            "Warbringer" => Self::Warbringer,
+            "Witchhunter" => Self::WitchHunter,
+            "Gemling Legionnaire" => Self::GemlingLegionaire,
+            "Invoker" => Self::Invoker,
+            "Acolyte of Chayula" => Self::AcolyteOfChayula,
+            "Stormweaver" => Self::Stormweaver,
+            "Chronomancer" => Self::Chronomancer,
+
+            _ => panic!("Invalid ascendancy name {s}"),
+        })
     }
 }
 
@@ -189,7 +280,10 @@ pub fn build(tree: &data::Tree) -> Tree {
                         .or_insert_with(TmpAsc::default);
                     if node.is_ascendancy_start {
                         asc.start_node = node.id();
-                        asc.start_position = Coord { x, y };
+                        asc.start_position = Coord {
+                            x: node.group().x as i32,
+                            y: node.group().y as i32,
+                        };
                     }
                     (&mut asc.nodes, &mut asc.connections)
                 } else {
@@ -234,15 +328,21 @@ pub fn build(tree: &data::Tree) -> Tree {
                     path,
                 };
 
+                dbg!(&connection);
+
                 connections.push(connection);
             }
+
+            for con in node.out() {}
 
             nodes.push(tree_node);
         }
     }
 
-    const ASCENDANCY_POS_X: i32 = 7000;
-    const ASCENDANCY_POS_Y: i32 = -7700;
+    // const ASCENDANCY_POS_X: i32 = 7000;
+    // const ASCENDANCY_POS_Y: i32 = -7700;
+    const ASCENDANCY_POS_X: i32 = 0;
+    const ASCENDANCY_POS_Y: i32 = -0;
 
     let mut ascendancies = BTreeMap::new();
     let mut alternate_ascendancies = BTreeSet::new();
@@ -283,7 +383,7 @@ pub fn build(tree: &data::Tree) -> Tree {
                 .alternate_ascendancies
                 .iter()
                 .enumerate()
-                .find_map(|(i, asc)| (asc.id == asc_name.as_ref()).then_some(i + 1))
+                .find_map(|(i, asc)| (asc.id == asc_name.as_str()).then_some(i + 1))
                 .unwrap_or_else(|| panic!(
                     "expected to find alternate ascendancy {asc_name:?} in the alternate ascendancy array"
                 ));
@@ -311,7 +411,7 @@ pub fn build(tree: &data::Tree) -> Tree {
                     .ascendancies
                     .iter()
                     .enumerate()
-                    .find(|(_, asc)| asc.name == asc_name.as_ref())
+                    .find(|(_, asc)| asc.name == asc_name.as_str())
                     .map(|(asc_i, _)| (class_i, asc_i + 1))
             })
             .unwrap_or((0, 0));
