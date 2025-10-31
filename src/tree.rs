@@ -85,6 +85,17 @@ pub enum Ascendancy {
     Warden,
     Warlock,
     Primalist,
+    // 3.27
+    Aul,
+    Breachlord,
+    Catarina,
+    Delirious,
+    Farrul,
+    KingInTheMists,
+    Lycia,
+    Olroth,
+    Oshabi,
+    Trialmaster,
 }
 
 impl Ascendancy {
@@ -361,8 +372,7 @@ fn node_kind(node: &data::Node) -> NodeKind {
                 (_, true) => AscendancyNodeKind::Notable,
                 (_, false) => AscendancyNodeKind::Normal,
             },
-            ascendancy: node
-                .ascendancy_name
+            ascendancy: dbg!(&node.ascendancy_name)
                 .as_ref()
                 .expect("ascendancy node should have an ascendancy name")
                 .parse()

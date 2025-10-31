@@ -47,3 +47,7 @@ url = "https://raw.githubusercontent.com/grindinggear/skilltree-export/3.25.0/da
 [[tree]]
 name = "3.26"
 url = "https://raw.githubusercontent.com/grindinggear/skilltree-export/3.26.0/data.json"
+
+[[tree]]
+name = "3.27"
+url = "https://raw.githubusercontent.com/grindinggear/skilltree-export/3.27.0/data.json"
